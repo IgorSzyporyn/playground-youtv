@@ -7,14 +7,17 @@ const Root = styled.div`
   height: 100%;
   min-height: 100%;
   color: var(--text-bright);
+  padding: 32px 0;
 `
 
-const Header = styled.header``
+const Header = styled.header`
+  position: static;
+`
 
 const Title = styled.h1`
   font-size: 19px;
   font-weight: 500;
-  margin: 32px 0 24px;
+  margin: 0 0 24px;
   text-align: center;
 `
 
@@ -27,7 +30,13 @@ const Text = styled.p`
   font-weight: 300;
 `
 
-const Body = styled.main``
+type BodyProps = {
+  drawerOpen: boolean
+}
+
+const Body = styled.main<BodyProps>`
+  padding-bottom: ${({ drawerOpen }) => (drawerOpen ? '136px' : 0)};
+`
 
 const List = styled.ul`
   list-style: none;
@@ -66,7 +75,7 @@ const Drawer = styled(motion.footer)`
   text-align: center;
 `
 
-const DrawerText = styled(motion.p)`
+const DrawerText = styled.p`
   font-size: 13px;
   font-weight: 300;
   margin-top: 0;
@@ -77,6 +86,10 @@ const DrawerText = styled(motion.p)`
   &:last-child {
     margin-bottom: 32px;
   }
+`
+
+const DrawerTextHighLight = styled.span`
+  font-weight: 700;
 `
 
 const Button = styled.button`
@@ -109,7 +122,12 @@ const regions: RegionType[] = [
   { id: 8, text: 'TV2 Anholt' },
   { id: 9, text: 'TV2 Samsø' },
   { id: 10, text: 'TV2 Sydfynske Øhav' },
-  { id: 11, text: 'TV2 Mallorca' },
+  { id: 11, text: 'TV2 Halland' },
+  { id: 12, text: 'TV2 Blekinge' },
+  { id: 13, text: 'TV2 Skåne' },
+  { id: 14, text: 'TV2 Slesvig-Holsten' },
+  { id: 15, text: 'TV2 Royal' },
+  { id: 16, text: 'TV2 Optimal City Slicker' },
 ]
 
 type State = {
@@ -148,7 +166,7 @@ const getRegionTextById = (id: number) => {
 }
 
 function App() {
-  const [isOpen, toggleOpen] = useCycle(false, true)
+  const [drawerOpen, toggleOpen] = useCycle(false, true)
   const [state, setState] = useState<State>({ ...defaultState })
   const drawerRef = useRef(null)
 
@@ -164,13 +182,13 @@ function App() {
   return (
     <Root>
       <Header>
-        <Title>TV2 Regioner</Title>
+        <Title>Vælg TV2 Region</Title>
         <Text>
-          Foretager du en ændring af valg af region skal du blot på knappen "Gem ændring" og din
-          ændring vil træde i kraft
+          Foretager du en ændring i valg af region skal du blot trykke på knappen "Bekræft ændring",
+          og din ændring vil træde i kraft
         </Text>
       </Header>
-      <Body>
+      <Body drawerOpen={drawerOpen}>
         <List>
           {regions.map(({ id, text }) => {
             const selected = id === state.selectedId
@@ -201,7 +219,7 @@ function App() {
       </Body>
       <Drawer
         initial={false}
-        animate={isOpen ? 'open' : 'closed'}
+        animate={drawerOpen ? 'open' : 'closed'}
         ref={drawerRef}
         transition={{ type: 'tween' }}
         variants={{
@@ -214,7 +232,8 @@ function App() {
         }}
       >
         <DrawerText>
-          Ændring vil skifte væk fra {state.currentText} som din aktive TV2 Region
+          Vil du skifte væk fra <DrawerTextHighLight>{state.currentText}</DrawerTextHighLight> som
+          din aktive TV2 Region
         </DrawerText>
         <Button
           onClick={() => {
@@ -232,7 +251,7 @@ function App() {
             toggleOpen()
           }}
         >
-          Gem ændring
+          Bekræft ændring
         </Button>
       </Drawer>
     </Root>
