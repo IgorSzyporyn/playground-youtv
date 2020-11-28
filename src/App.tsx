@@ -180,7 +180,7 @@ function App() {
 
   useEffect(() => {
     Mousetrap.bind('y o u t v', () => {
-      const newRenderAs = renderAs === 'checkbox' ? 'radiobutton' : 'checkbox'
+      const newRenderAs = renderAs === 'radiobutton' ? 'checkbox' : 'radiobutton'
       setRenderAs(newRenderAs)
     })
 
@@ -217,7 +217,7 @@ function App() {
               <ListItem
                 selected={selected}
                 current={current}
-                key={`ListItem-${id}`}
+                key={`App-ListItem-${id}`}
                 onClick={() => {
                   if (state.selectedId !== id) {
                     const dirty = state.currentId !== id
@@ -244,7 +244,7 @@ function App() {
         </List>
       </Body>
       <Drawer
-        initial={false}
+        initial="closed"
         animate={drawerOpen ? 'open' : 'closed'}
         ref={drawerRef}
         transition={{ type: 'tween' }}
