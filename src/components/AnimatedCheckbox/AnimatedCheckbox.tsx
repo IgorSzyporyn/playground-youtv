@@ -2,15 +2,15 @@ import React, { useRef } from 'react'
 import styled from 'styled-components'
 import { motion, HTMLMotionProps, useMotionValue, useTransform } from 'framer-motion'
 
-const Root = styled(motion.div)<WrapperProps>`
+type RootProps = Omit<Props<string, number>, 'checked' | 'renderAs'>
+
+const Root = styled(motion.div)<RootProps>`
   box-sizing: border-box;
   width: ${({ size }) => size}px;
   height: ${({ size }) => size}px;
 `
 
-type WrapperProps = Omit<Props<string>, 'checked' | 'renderAs'>
-
-const Wrapper = styled(motion.div)<WrapperProps>`
+const Wrapper = styled(motion.div)`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,10 +20,14 @@ const Wrapper = styled(motion.div)<WrapperProps>`
   height: 100%;
 `
 
-const CheckboxOuter = styled(Wrapper)<WrapperProps & { colorVar: string }>`
+type OuterProps = {
+  color: string
+}
+
+const CheckboxOuter = styled(Wrapper)<OuterProps>`
   position: relative;
   border-radius: 7%;
-  border: 2px solid ${({ colorVar }) => colorVar};
+  border: 2px solid ${({ color }) => color};
 `
 
 const CheckboxInner = styled.svg``
@@ -34,12 +38,12 @@ const RadiobuttonInner = styled(motion.div)`
   border-radius: 100%;
 `
 
-const RadiobuttonOuter = styled(Wrapper)<WrapperProps & { colorVar: string }>`
+const RadiobuttonOuter = styled(Wrapper)<OuterProps>`
   border-radius: 100%;
-  border: 2px solid ${({ colorVar }) => colorVar};
+  border: 2px solid ${({ color }) => color};
 
   ${RadiobuttonInner} {
-    background-color: ${({ colorVar }) => colorVar};
+    background-color: ${({ color }) => color};
   }
 `
 
@@ -47,35 +51,24 @@ export type CheckboxTypes = 'checkbox' | 'radiobutton'
 
 export type VariantTypes = 'outlined' | 'filled'
 
-type Props<T> = {
+type Props<T, U> = {
   checked: boolean
   renderAs?: CheckboxTypes
-  size?: number
+  size?: U
   type?: T
   variant?: VariantTypes
 } & HTMLMotionProps<'div'>
 
-const variants = {
-  checkbox: {
-    checked: { pathLength: 0.9 },
-    unchecked: { pathLength: 0 },
-  },
-  radiobutton: {
-    checked: { scale: 1, opacity: 1 },
-    unchecked: { scale: 0, opacity: 0 },
-  },
-}
-
-function AnimatedCheckbox<T extends string>({
+function AnimatedCheckbox<T extends string, U extends number>({
   variant,
   checked,
   renderAs,
   size,
   type,
   ...rest
-}: Props<T>) {
-  const colorVar = `var(--color-${type})`
-  const colorVarContrast = `var(--color-${type}-contrast)`
+}: Props<T, U>) {
+  const color = `var(--color-${type})`
+  const contrastColor = `var(--color-${type}-contrast)`
 
   const motionRef = useRef(null)
   const pathLength = useMotionValue(0)
@@ -83,47 +76,53 @@ function AnimatedCheckbox<T extends string>({
   const animate = checked ? 'checked' : 'unchecked'
 
   return (
-    <Root size={size} role="checkbox" aria-checked={checked} animate={animate} {...rest}>
-      {renderAs === 'checkbox' ? (
-        <CheckboxOuter colorVar={colorVar}>
-          <CheckboxInner
+    <Root animate={animate} aria-checked={checked} role="checkbox" size={size} {...rest}>
+      {renderAs === 'radiobutton' ? (
+        <RadiobuttonOuter color={color}>
+          <RadiobuttonInner
+            initial="unchecked"
             ref={motionRef}
-            version="1.1"
-            width={`${size}px`}
+            transition={{ type: 'spring' }}
+            variants={{
+              checked: { scale: 1, opacity: 1 },
+              unchecked: { scale: 0, opacity: 0 },
+            }}
+          />
+        </RadiobuttonOuter>
+      ) : (
+        <CheckboxOuter color={color}>
+          <CheckboxInner
             height={`${size}px`}
+            ref={motionRef}
             shapeRendering="geometricPrecision"
+            version="1.1"
             viewBox={`0 0 150 150`}
+            width={`${size}px`}
           >
             <motion.path
               d="M38 74.707l24.647 24.646L116.5 45.5"
-              fill="transparent"
-              strokeWidth="20"
-              stroke={colorVarContrast}
-              strokeLinecap="round"
-              variants={variants.checkbox}
-              style={{ pathLength, opacity }}
               initial="unchecked"
+              fill="transparent"
+              stroke={contrastColor}
+              strokeLinecap="round"
+              strokeWidth="20"
+              style={{ pathLength, opacity }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              variants={{
+                checked: { pathLength: 0.9 },
+                unchecked: { pathLength: 0 },
+              }}
             />
           </CheckboxInner>
         </CheckboxOuter>
-      ) : (
-        <RadiobuttonOuter colorVar={colorVar}>
-          <RadiobuttonInner
-            ref={motionRef}
-            transition={{ type: 'spring' }}
-            variants={variants.radiobutton}
-            initial="unchecked"
-          />
-        </RadiobuttonOuter>
       )}
     </Root>
   )
 }
 
 AnimatedCheckbox.defaultProps = {
-  size: 24,
   renderAs: 'checkbox',
+  size: 24,
   type: 'default',
   variant: 'outlined',
 }

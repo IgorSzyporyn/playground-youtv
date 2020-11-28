@@ -137,6 +137,8 @@ const regions: RegionType[] = [
 
 type ContextTypes = 'primary' | 'secondary'
 
+type IconSizeTypes = 16 | 24 | 32 | 48 | 64
+
 type State = {
   dirty: boolean
   wasDirty: boolean
@@ -185,7 +187,7 @@ function App() {
     })
 
     return () => {
-      Mousetrap.unbind('m a r i e')
+      Mousetrap.unbind('y o u t v')
     }
   }, [renderAs])
 
@@ -231,7 +233,7 @@ function App() {
               >
                 <ListItemInner selected={selected}>
                   <span>{text}</span>
-                  <AnimatedCheckbox<ContextTypes>
+                  <AnimatedCheckbox<ContextTypes, IconSizeTypes>
                     renderAs={renderAs}
                     size={24}
                     checked={id === state.selectedId}
@@ -249,12 +251,8 @@ function App() {
         ref={drawerRef}
         transition={{ type: 'tween' }}
         variants={{
-          open: {
-            y: 0,
-          },
-          closed: {
-            y: 200,
-          },
+          open: { y: 0 },
+          closed: { y: 200 },
         }}
       >
         <DrawerText>
