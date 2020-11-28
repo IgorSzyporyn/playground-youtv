@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { motion, useCycle } from 'framer-motion'
-import AnimatedCheckbox from './components/AnimatedCheckbox/AnimatedCheckbox'
+import AnimatedCheckbox, { CheckboxTypes } from './components/AnimatedCheckbox/AnimatedCheckbox'
+import Mousetrap from 'mousetrap'
 
 const Root = styled.div`
   height: 100%;
@@ -51,6 +52,10 @@ type ListItemProps = {
 const ListItem = styled.li<ListItemProps & { current: boolean }>`
   cursor: ${({ selected }) => (selected ? 'default' : 'pointer')};
   background-color: ${({ current }) => (current ? 'rgba(0, 0, 0, 0.2)' : 'transparent')};
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
 `
 
 const ListItemInner = styled.div<ListItemProps>`
@@ -101,7 +106,7 @@ const Button = styled.button`
   border-radius: 3px;
   padding: 0 16px;
   line-height: 36px;
-  font-weight: 500;
+  font-weight: 700;
   text-transform: uppercase;
   font-size: 13px;
 `
@@ -169,8 +174,20 @@ const getRegionTextById = (id: number) => {
 
 function App() {
   const [drawerOpen, toggleOpen] = useCycle(false, true)
-  const [state, setState] = useState<State>({ ...defaultState })
+  const [state, setState] = useState({ ...defaultState })
+  const [renderAs, setRenderAs] = useState<CheckboxTypes>('radiobutton')
   const drawerRef = useRef(null)
+
+  useEffect(() => {
+    Mousetrap.bind('y o u t v', () => {
+      const newRenderAs = renderAs === 'checkbox' ? 'radiobutton' : 'checkbox'
+      setRenderAs(newRenderAs)
+    })
+
+    return () => {
+      Mousetrap.unbind('m a r i e')
+    }
+  }, [renderAs])
 
   useEffect(() => {
     if (!state.wasDirty && state.dirty) {
@@ -215,7 +232,7 @@ function App() {
                 <ListItemInner selected={selected}>
                   <span>{text}</span>
                   <AnimatedCheckbox<ContextTypes>
-                    renderAs="radiobutton"
+                    renderAs={renderAs}
                     size={24}
                     checked={id === state.selectedId}
                     type="primary"
