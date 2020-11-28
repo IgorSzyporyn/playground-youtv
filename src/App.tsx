@@ -231,11 +231,11 @@ function App() {
               >
                 <ListItemInner selected={selected}>
                   <span>{text}</span>
-                  <AnimatedCheckbox<ContextTypes, IconSizeTypes>
+                  <AnimatedCheckbox<IconSizeTypes>
                     renderAs={renderAs}
                     size={24}
+                    outerFill="var(--color-primary)"
                     checked={id === state.selectedId}
-                    type="primary"
                   />
                 </ListItemInner>
               </ListItem>
