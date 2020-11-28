@@ -22,7 +22,7 @@ code {
   --color-black: #000000;
   --color-primary: #ff2aed;
   --background-dark: #070823;
-  --background-dark-gradient: linear-gradient(to bottom, rgb(1, 0, 28), rgb(24, 34, 58));
+  --background-dark-gradient: linear-gradient(to right bottom, rgb(1, 0, 28), rgb(24, 34, 58));
   --background-darker: #050622;
   --background-darkest: #01001d;
   --text-bright: #ffffff;

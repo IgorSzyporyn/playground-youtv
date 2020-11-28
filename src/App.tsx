@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { motion, useCycle } from 'framer-motion'
-import RadioButton from './components/RadioButton/RadioButton'
+import AnimatedCheckbox from './components/AnimatedCheckbox/AnimatedCheckbox'
 
 const Root = styled.div`
   height: 100%;
@@ -48,8 +48,9 @@ type ListItemProps = {
   selected: boolean
 }
 
-const ListItem = styled.li<ListItemProps>`
+const ListItem = styled.li<ListItemProps & { current: boolean }>`
   cursor: ${({ selected }) => (selected ? 'default' : 'pointer')};
+  background-color: ${({ current }) => (current ? 'rgba(0, 0, 0, 0.2)' : 'transparent')};
 `
 
 const ListItemInner = styled.div<ListItemProps>`
@@ -59,8 +60,7 @@ const ListItemInner = styled.div<ListItemProps>`
   height: 48px;
   justify-content: space-between;
   padding: 0 16px;
-  opacity: ${({ selected }) => (selected ? 1 : 0.65)};
-  font-weight: ${({ selected }) => (selected ? 700 : 300)};
+  opacity: ${({ selected }) => (selected ? 1 : 0.87)};
 `
 
 const Drawer = styled(motion.footer)`
@@ -130,6 +130,8 @@ const regions: RegionType[] = [
   { id: 16, text: 'TV2 Optimal City Slicker' },
 ]
 
+type ContextTypes = 'primary' | 'secondary'
+
 type State = {
   dirty: boolean
   wasDirty: boolean
@@ -142,10 +144,10 @@ type State = {
 const defaultState: State = {
   dirty: false,
   wasDirty: false,
-  currentId: regions[0].id,
-  currentText: regions[0].text,
-  selectedId: regions[0].id,
-  selectedText: regions[0].text,
+  currentId: regions[5].id,
+  currentText: regions[5].text,
+  selectedId: regions[5].id,
+  selectedText: regions[5].text,
 }
 
 const getRegionTextById = (id: number) => {
@@ -192,25 +194,32 @@ function App() {
         <List>
           {regions.map(({ id, text }) => {
             const selected = id === state.selectedId
+            const current = id === state.currentId
+
             return (
               <ListItem
                 selected={selected}
+                current={current}
                 key={`ListItem-${id}`}
                 onClick={() => {
                   if (state.selectedId !== id) {
-                    setState({
-                      ...state,
-                      dirty: state.currentId !== id,
-                      wasDirty: state.currentId === id ? true : state.dirty,
-                      selectedId: id,
-                      selectedText: text,
-                    })
+                    const dirty = state.currentId !== id
+                    const wasDirty = state.currentId === id ? true : state.dirty
+                    const selectedId = id
+                    const selectedText = text
+
+                    setState({ ...state, dirty, wasDirty, selectedId, selectedText })
                   }
                 }}
               >
                 <ListItemInner selected={selected}>
                   <span>{text}</span>
-                  <RadioButton size={24} checked={id === state.selectedId} />
+                  <AnimatedCheckbox<ContextTypes>
+                    renderAs="radiobutton"
+                    size={24}
+                    checked={id === state.selectedId}
+                    type="primary"
+                  />
                 </ListItemInner>
               </ListItem>
             )
@@ -232,8 +241,9 @@ function App() {
         }}
       >
         <DrawerText>
-          Vil du skifte væk fra <DrawerTextHighLight>{state.currentText}</DrawerTextHighLight> som
-          din aktive TV2 Region
+          <span>Vil du skifte væk fra </span>
+          <DrawerTextHighLight>{state.currentText}</DrawerTextHighLight>
+          <span> som din aktive TV2 Region</span>
         </DrawerText>
         <Button
           onClick={() => {
