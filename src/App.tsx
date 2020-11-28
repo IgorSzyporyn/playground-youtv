@@ -1,8 +1,8 @@
+import { motion, useCycle } from 'framer-motion'
+import Mousetrap from 'mousetrap'
 import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { motion, useCycle } from 'framer-motion'
 import AnimatedCheckbox, { CheckboxTypes } from './components/AnimatedCheckbox/AnimatedCheckbox'
-import Mousetrap from 'mousetrap'
 
 const Root = styled.div`
   height: 100%;
@@ -11,9 +11,7 @@ const Root = styled.div`
   padding: 32px 0;
 `
 
-const Header = styled.header`
-  position: static;
-`
+const Header = styled.header``
 
 const Title = styled.h1`
   font-size: 19px;
