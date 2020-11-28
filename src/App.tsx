@@ -60,7 +60,7 @@ const ListItemInner = styled.div<ListItemProps>`
   height: 48px;
   justify-content: space-between;
   padding: 0 16px;
-  opacity: ${({ selected }) => (selected ? 1 : 0.87)};
+  opacity: ${({ selected }) => (selected ? 1 : 0.7)};
 `
 
 const Drawer = styled(motion.footer)`
